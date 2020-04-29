@@ -1,21 +1,9 @@
 const jwt = require('jsonwebtoken')
 
-module.exports.users = [
-  {
-    username: "john",
-    password: "password123admin",
-    role: "admin",
-  },
-  {
-    username: "anna",
-    password: "password123member",
-    role: "member",
-  },
-];
-
-module.exports.accessTokenSecret = "youraccesstokensecret";
-module.exports.refreshTokenSecret = "yourrefreshtokensecret";
-module.exports.refreshTokens = [];
+const accessTokenSecret = "youraccesstokensecret"
+module.exports.accessTokenSecret = accessTokenSecret
+const refreshTokenSecret = "yourrefreshtokensecret"
+module.exports.refreshTokenSecret = refreshTokenSecret
 
 module.exports.auth = (req, res, next) => {
   const authHeader = req.headers.authorization;

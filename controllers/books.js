@@ -30,11 +30,11 @@ const books = [
 ];
 
 
-router.get("/books", auth, (req, res) => {
+router.get("/", auth, (req, res) => {
   res.json(books);
 });
 
-router.post("/books", auth, (req, res) => {
+router.post("/", auth, (req, res) => {
   const { role } = req.user;
 
   if (role != "admin") {

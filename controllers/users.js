@@ -1,11 +1,25 @@
 const router = require('express').Router();
+const jwt = require('jsonwebtoken')
 
-const { auth } = require('./auth')
+const { auth, accessTokenSecret, refreshTokenSecret } = require('./auth')
 
-let { users, accessTokenSecret, refreshTokenSecret, refreshTokens } = require('./auth');
+const users = [
+  {
+    username: "john",
+    password: "password123admin",
+    role: "admin",
+  },
+  {
+    username: "anna",
+    password: "password123member",
+    role: "member",
+  },
+];
 
-router.get('/login', auth, (req, res) => {
-  console.log('/users/login')
+let refreshTokens = []
+
+// issue access and refresh tokens
+router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   const user = users.find((u) => {
@@ -34,7 +48,8 @@ router.get('/login', auth, (req, res) => {
   }
 });
 
-router.post("/token", (req, res) => {
+// refresh a token
+router.post("/token", auth, (req, res) => {
   const { token } = req.body;
 
   if (!token) {
@@ -62,9 +77,10 @@ router.post("/token", (req, res) => {
   });
 });
 
+// revoke an existing refresh token
 router.post("/logout", (req, res) => {
   const { token } = req.body;
-  refreshTokens = refreshTokens.filter((token) => t !== token);
+  refreshTokens = refreshTokens.filter(t => t !== token);
   res.send("Logout successful");
 });
 
