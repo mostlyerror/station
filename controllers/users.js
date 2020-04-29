@@ -1,7 +1,7 @@
-const router = require('express').Router();
-const jwt = require('jsonwebtoken')
+const router = require("express").Router();
+const jwt = require("jsonwebtoken");
 
-const { auth, accessTokenSecret, refreshTokenSecret } = require('./auth')
+const { auth, accessTokenSecret, refreshTokenSecret } = require("./auth");
 
 const users = [
   {
@@ -14,26 +14,48 @@ const users = [
     password: "password123member",
     role: "member",
   },
+  {
+    username: "ben",
+    email: "ben@ben.com",
+    password: "benpassword",
+    role: "admin",
+  },
 ];
 
-let refreshTokens = []
+let refreshTokens = [];
+
+router.post("/register", (req, res) => {
+  const { username, email, password, passwordConfirmation } = req.body.user;
+
+  users.push({
+    username,
+    email,
+    password,
+    role: 'member'
+  })
+
+  console.log(users)
+  res.sendStatus(201);
+});
 
 // issue access and refresh tokens
-router.post('/login', (req, res) => {
-  const { username, password } = req.body;
+router.post("/login", (req, res) => {
+  const { userIdentifier, password } = req.body.user;
 
   const user = users.find((u) => {
-    return u.username === username && u.password === password;
+    return (
+      (u.username === userIdentifier || u.email === userIdentifier) && u.password === password
+    );
   });
 
   if (user) {
     const accessToken = jwt.sign(
-      { username: user.username, role: user.role },
+      { username: user.username, email: user.email, role: user.role },
       accessTokenSecret,
       { expiresIn: "20m" }
     );
     const refreshToken = jwt.sign(
-      { username: user.username, role: user.role },
+      { username: user.username, email: user.email, role: user.role },
       refreshTokenSecret
     );
 
@@ -44,7 +66,8 @@ router.post('/login', (req, res) => {
       refreshToken,
     });
   } else {
-    res.send("Username or password incorrect");
+    res.statusMessage = 'Username or password incorrect'
+    res.status(400).send()
   }
 });
 
@@ -80,7 +103,7 @@ router.post("/token", auth, (req, res) => {
 // revoke an existing refresh token
 router.post("/logout", (req, res) => {
   const { token } = req.body;
-  refreshTokens = refreshTokens.filter(t => t !== token);
+  refreshTokens = refreshTokens.filter((t) => t !== token);
   res.send("Logout successful");
 });
 
