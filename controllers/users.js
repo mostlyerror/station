@@ -20,6 +20,12 @@ const users = [
     password: "benpassword",
     role: "admin",
   },
+  {
+    username: 'asdf',
+    email: 'asdf@asdf.com',
+    password: 'asdf',
+    role: 'admin',
+  }
 ];
 
 let refreshTokens = [];
